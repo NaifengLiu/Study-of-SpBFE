@@ -1,6 +1,9 @@
 import copy
 import strategy_generation
 import tqdm
+import RandomInput
+import influence
+import numpy as np
 
 
 class Node:
@@ -52,7 +55,8 @@ class Tree:
 			if node.x is not None:
 				self.fill_strategy_node(strategy, node.lchild, left_assignment, cost_to_reach_this_node + costs[node.x],
 										(1 - probs[node.x]) * probability_to_reach_this_node, costs, probs)
-				self.fill_strategy_node(strategy, node.rchild, right_assignment, cost_to_reach_this_node + costs[node.x],
+				self.fill_strategy_node(strategy, node.rchild, right_assignment,
+										cost_to_reach_this_node + costs[node.x],
 										probs[node.x] * probability_to_reach_this_node, costs, probs)
 			else:
 				node.boolean_value = 1 if self.expression(node.assignment) else 0
@@ -84,7 +88,7 @@ class Tree:
 
 	def get_optimal_adaptive_strategy(self, costs, probs):
 		print("generating strategies ... ")
-		strategies = strategy_generation.generate(5)
+		strategies = strategy_generation.generate(self.max_level)
 		print("start testing ... ")
 		# strategy_costs = [self.calculate_strategy_cost(item, costs, probs) for item in strategies]
 		strategy_costs = []
@@ -96,23 +100,35 @@ class Tree:
 			if strategy_costs[i] < min_cost:
 				min_cost = strategy_costs[i]
 				min_cost_instance = strategies[i]
-		return min_cost,min_cost_instance
+		return min_cost, min_cost_instance
 
 
 def example42(t):
 	# return ((t[0] or t[1]) and (t[2] or t[3])) or t[4]
 	# return ((0 or t[1]) and t[0]) or (t[4] and (t[2] or t[3]))
-	return ((t[1] or t[2]) and t[0]) or (t[5] and (t[3] or t[4]))
+	# return ((t[1] or t[2]) and t[0]) or (t[5] and (t[3] or t[4]))
+	return ((t[1] or t[2]) and t[0]) or t[3]
 
 
-T = Tree(6, example42)
-c = [512, 1.1, 512.2, 8.3, 512.4, 64.5]
-p = [0.5,0.5,0.5,0.5,0.5,0.5]
+while True:
+	T = Tree(4, example42)
+	c = [1, 1, 1, 1]
+	p = RandomInput.get_random_probabilities(4)
+	# p.sort()
 
-# print(T.calculate_strategy_cost([0,4,3,1,1,2,2,3,3,3,3,4,4,4,4,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1], [1]*5, [0.7, 0.2, 0.2, 0.3, 0.1]))
-print(T.calculate_strategy_cost([1,3,3,5,5,5,5,0,4,0,0,0,0,0,0,2,2,0,0,2,2,2,2,4,4,4,4,4,4,4,4,4,4,4,4,2,2,2,2,4,4,4,4,4,4,4,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2], c,p))
-print(T.calculate_strategy_cost([1,5,3,0,3,0,5,2,2,4,4,5,5,0,0,4,4,4,4,0,0,0,0,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2], c,p))
-#
-# print(T.get_optimal_adaptive_strategy(c,p))
+	# print(T.calculate_strategy_cost([0,4,3,1,1,2,2,3,3,3,3,4,4,4,4,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1], [1]*5, [0.7, 0.2, 0.2, 0.3, 0.1]))
+	# print(T.calculate_strategy_cost([1,3,3,5,5,5,5,0,4,0,0,0,0,0,0,2,2,0,0,2,2,2,2,4,4,4,4,4,4,4,4,4,4,4,4,2,2,2,2,4,4,4,4,4,4,4,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2], c,p))
+	# print(T.calculate_strategy_cost([1,5,3,0,3,0,5,2,2,4,4,5,5,0,0,4,4,4,4,0,0,0,0,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2], c,p))
+	#
 
-print("done")
+	opt = T.get_optimal_adaptive_strategy(c, p)
+	# print(opt)
+	inf = influence.find_prob_flipping_f(4, example42, p)
+	# print(inf)
+	while opt[1][0] != np.argsort(inf)[-1]:
+		print("!")
+		print(p)
+		print(opt)
+		print(inf)
+		exit()
+	print("done")

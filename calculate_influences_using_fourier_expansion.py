@@ -2,7 +2,10 @@ import sympy
 import math
 
 
-def exp(t): return (t[1] or t[2]) and t[0]
+# def exp(t): return (t[1] or t[2]) and t[0]
+# def exp(t): return ((t[0] or t[1]) and (t[2] or t[3])) or t[4]
+# def exp(t): return 1 if sum(t) == len(t) or sum(t) == 0 else 0
+def exp(t): return 1 if sum(t) >= 3 else 0
 
 
 def squared_sum(x):
@@ -85,7 +88,8 @@ def f(n, expression, probabilities):
 	return truth_table
 
 
-f(3, exp, [0.4,0.9,0.3])
+# f(3, exp, [0.4,0.9,0.3])
+# f(5, exp, [0.25, 0.45, 0.57, 0.73, 0.78])
 
 # print((0.348**2+0.372**2+0.828**2+0.972**2)/0.2/0.8)
 # print((0.348**2+0.372**2+0.164**2+0.268**2)/0.3/0.7)
