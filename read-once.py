@@ -107,13 +107,14 @@ def example42(t):
 	# return ((t[0] or t[1]) and (t[2] or t[3])) or t[4]
 	# return ((0 or t[1]) and t[0]) or (t[4] and (t[2] or t[3]))
 	# return ((t[1] or t[2]) and t[0]) or (t[5] and (t[3] or t[4]))
-	return ((t[1] or t[2]) and t[0]) or t[3]
+	return ((t[1] and t[2]) or t[0]) and (t[3] or t[4])
 
 
 while True:
-	T = Tree(4, example42)
-	c = [1, 1, 1, 1]
-	p = RandomInput.get_random_probabilities(4)
+	T = Tree(5, example42)
+	c = [1, 1, 1, 1,1]
+	# p = RandomInput.get_random_probabilities(4)
+	p = [0.5, 0.5, 0.5, 0.5,0.5]
 	# p.sort()
 
 	# print(T.calculate_strategy_cost([0,4,3,1,1,2,2,3,3,3,3,4,4,4,4,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1], [1]*5, [0.7, 0.2, 0.2, 0.3, 0.1]))
@@ -122,9 +123,9 @@ while True:
 	#
 
 	opt = T.get_optimal_adaptive_strategy(c, p)
-	# print(opt)
-	inf = influence.find_prob_flipping_f(4, example42, p)
-	# print(inf)
+	print(opt)
+	inf = influence.find_prob_flipping_f(5, example42, p)
+	print(inf)
 	while opt[1][0] != np.argsort(inf)[-1]:
 		print("!")
 		print(p)
@@ -132,3 +133,4 @@ while True:
 		print(inf)
 		exit()
 	print("done")
+	break
