@@ -36,7 +36,7 @@ def find_prob_flipping_f(n, expression, p):
 				flip[j].append(t[:j] + [0] + t[j:])
 				flip[j].append(t[:j] + [1] + t[j:])
 	for each in flip:
-		# print(str(each) + " : " + str(flip[each]))
+		print(str(each) + " : " + str(flip[each]))
 		for item in flip[each]:
 			tmp = 1
 			for i in range(n):
