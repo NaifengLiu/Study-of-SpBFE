@@ -17,6 +17,11 @@ class Gate:
 		self.variables.append(gate)
 		self.types.append('gate')
 
+	def contains(self, variable):
+		if variable in self.variables:
+			return True
+		return False
+
 	def to_string(self):
 		s = self.gate_type
 		content = []
@@ -139,3 +144,23 @@ for m in range(1, max(I_max) + 1):
 					L_R_ratio.append(prob[f.sibling_classes[0][i][-I[i]]] / cost[f.sibling_classes[0][i][-I[i]]])
 		order = np.argsort(L_R_ratio)
 		print(L[order[-1]])
+
+		print(f.sibling_classes)
+
+		for i in range(len(f.sibling_classes[0])):
+			gate = f.sibling_classes[0][i]
+			if L[order[-1]] in gate:
+				if f.sibling_classes[1][i] == "AND":
+					print(I[:i]+[I[i]]+I[i+1:])
+					print("TRUE")
+					print(I[:i] + [I[i]-1] + I[i + 1:])
+					print("FALSE")
+					print(I[:i] + [0] + I[i + 1:])
+				elif f.sibling_classes[1][i] == "OR":
+					print(I[:i]+[I[i]]+I[i+1:])
+					print("TRUE")
+					print(I[:i] + [0] + I[i + 1:])
+					print("FALSE")
+					print(I[:i] + [I[i]-1] + I[i + 1:])
+
+		print()
