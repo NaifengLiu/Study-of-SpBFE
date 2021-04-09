@@ -19,7 +19,7 @@ def f(n, expression):
 	return truth_table
 
 
-def find_prob_flipping_f(n, expression, p):
+def find_influences(n, expression, p):
 	truth_table = f(n, expression)
 	flip = dict()
 	flip_p = dict()
