@@ -4,6 +4,7 @@ import tqdm
 import RandomInput
 import influence
 import numpy as np
+import create_strategy_based_on_influences
 
 
 class Node:
@@ -105,25 +106,36 @@ class Tree:
 
 def example42(t):
 	# return ((t[0] or t[1]) and (t[2] or t[3])) or t[4]
+	return ((t[0] or t[1]) and (t[2] or t[3]))
 	# return ((0 or t[1]) and t[0]) or (t[4] and (t[2] or t[3]))
 	# return ((t[1] or t[2]) and t[0]) or (t[5] and (t[3] or t[4]))
-	return ((t[1] and t[2]) or t[0]) and (t[3] or t[4])
+	# return ((t[1] and t[2]) or t[0]) and (t[3] or t[4])
 
 
-while True:
-	T = Tree(5, example42)
-	c = [1, 1, 1, 1,1]
-	# p = RandomInput.get_random_probabilities(4)
-	p = [0.5, 0.5, 0.5, 0.5,0.5]
+
+for _ in range(10000):
+	T = Tree(4, example42)
+	c = [1, 1, 1, 1]
+	p = RandomInput.get_random_probabilities(4)
+	# p = [0.5, 0.5, 0.5, 0.5,0.5]
+	# p = [0.1, 0.2, 0.3, 0.4]
 	# p.sort()
 
-	print(T.calculate_strategy_cost([0,4,3,1,1,2,2,3,3,3,3,4,4,4,4,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1], c, p))
+	# print(T.calculate_strategy_cost([0,4,3,1,1,2,2,3,3,3,3,4,4,4,4,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1], c, p))
+	# print(T.calculate_strategy_cost([4, 1, 0, 0, 3, 1, 1, 2, 3, 2, 0, 2, 2, 2, 2, 3, 3, 2, 2, 0, 0, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3], c, p))
 	# print(T.calculate_strategy_cost([1,3,3,5,5,5,5,0,4,0,0,0,0,0,0,2,2,0,0,2,2,2,2,4,4,4,4,4,4,4,4,4,4,4,4,2,2,2,2,4,4,4,4,4,4,4,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2], c,p))
 	# print(T.calculate_strategy_cost([1,5,3,0,3,0,5,2,2,4,4,5,5,0,0,4,4,4,4,0,0,0,0,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2], c,p))
 	#
 
-	# opt = T.get_optimal_adaptive_strategy(c, p)
-	# print(opt)
+	opt = T.get_optimal_adaptive_strategy(c, p)
+	if opt[0] != T.calculate_strategy_cost(create_strategy_based_on_influences.get_strategy(4,p,example42),c,p):
+		print(p)
+		print(opt)
+		print(T.calculate_strategy_cost(create_strategy_based_on_influences.get_strategy(4,p,example42),c,p), create_strategy_based_on_influences.get_strategy(4,p,example42))
+		break
+
+	# print(T.calculate_strategy_cost([1, 0, 3, 2, 3, 2, 0, 3, 3, 2, 2, 0, 0, 2, 2], c, p))
+	# print(T.calculate_strategy_cost(create_strategy_based_on_influences.get_strategy(4,p,example42),c,p))
 	# inf = influence.find_prob_flipping_f(5, example42, p)
 	# print(inf)
 	# while opt[1][0] != np.argsort(inf)[-1]:
@@ -133,4 +145,4 @@ while True:
 	# 	print(inf)
 	# 	exit()
 	# print("done")
-	break
+	print()

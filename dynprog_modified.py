@@ -178,22 +178,22 @@ for m in range(1, max(I_max) + 1):
 
 		print(gate_contains_first_test)
 
-		if len(gate_contains_first_test) == 2:
-		# True Arc
-		# resolve gate to 1
-		# False Arc
-		# resolve gate to 0
-		elif len(gate_contains_first_test) > 2:
-			if gate_contains_first_test[0] == 'AND':
-				# True Arc
-				# reduce sibling class
-				# False Arc
-				# resolve gate to 0
-			elif gate_contains_first_test[0] == 'OR':
-				# True Arc
-				# resolve gate to 1
-				# False Arc
-				# reduce sibling class
-
+		# if len(gate_contains_first_test) == 2:
+		# # True Arc
+		# # resolve gate to 1
+		# # False Arc
+		# # resolve gate to 0
+		# elif len(gate_contains_first_test) > 2:
+		# 	if gate_contains_first_test[0] == 'AND':
+		# 		# True Arc
+		# 		# reduce sibling class
+		# 		# False Arc
+		# 		# resolve gate to 0
+		# 	elif gate_contains_first_test[0] == 'OR':
+		# 		# True Arc
+		# 		# resolve gate to 1
+		# 		# False Arc
+		# 		# reduce sibling class
+		#
 
 
