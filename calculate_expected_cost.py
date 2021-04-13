@@ -2,7 +2,6 @@ import copy
 import strategy_generation
 import tqdm
 import RandomInput
-import influence
 import numpy as np
 
 
@@ -40,8 +39,7 @@ class Tree:
 		self.root.x = strategy[0]
 		self.fill_strategy_node(strategy, self.root, [None] * self.max_level, 0, 1, costs, probs)
 
-	def fill_strategy_node(self, strategy, node: Node, assignment, cost_to_reach_this_node,
-						   probability_to_reach_this_node, costs, probs):
+	def fill_strategy_node(self, strategy, node: Node, assignment, cost_to_reach_this_node, probability_to_reach_this_node, costs, probs):
 		if node is not None:
 			node.assignment = assignment
 			node.cost_to_reach_this_node = cost_to_reach_this_node
@@ -52,33 +50,21 @@ class Tree:
 				node.x = strategy[node.index]
 				right_assignment[node.x] = 1
 				left_assignment[node.x] = 0
+				if self.if_function_resolved(assignment):
+					node.leaf = True
+					node.boolean_value = self.expression(node.assignment)
 			if node.x is not None:
-				self.fill_strategy_node(strategy, node.lchild, left_assignment, cost_to_reach_this_node + costs[node.x],
-										(1 - probs[node.x]) * probability_to_reach_this_node, costs, probs)
-				self.fill_strategy_node(strategy, node.rchild, right_assignment,
-										cost_to_reach_this_node + costs[node.x],
-										probs[node.x] * probability_to_reach_this_node, costs, probs)
+				self.fill_strategy_node(strategy, node.lchild, left_assignment, cost_to_reach_this_node + costs[node.x], (1 - probs[node.x]) * probability_to_reach_this_node, costs, probs)
+				self.fill_strategy_node(strategy, node.rchild, right_assignment, cost_to_reach_this_node + costs[node.x], probs[node.x] * probability_to_reach_this_node, costs, probs)
 			else:
 				node.boolean_value = 1 if self.expression(node.assignment) else 0
 				node.leaf = True
 
-	def pruning(self):
-		self.pruning_node(self.root)
-
-	def pruning_node(self, node):
-		if node.leaf is not True:
-			if node.rchild.boolean_value == node.lchild.boolean_value and node.rchild.boolean_value is not None:
-				node.boolean_value = node.rchild.boolean_value
-				node.leaf = True
-			else:
-				self.pruning_node(node.lchild)
-				self.pruning_node(node.rchild)
-
 	def calculate_strategy_cost(self, strategy, costs, probs):
 		self.root = self.build_tree(0, 0)
 		self.fill_strategy(strategy, costs, probs)
-		for _ in range(self.max_level):
-			self.pruning()
+		# for _ in range(self.max_level):
+		# 	self.pruning()
 		return self.calculate_tree_cost(self.root)
 
 	def calculate_tree_cost(self, node):
@@ -102,35 +88,23 @@ class Tree:
 				min_cost_instance = strategies[i]
 		return min_cost, min_cost_instance
 
+	def if_function_resolved(self, assignment):
+		assignment_0 = copy.deepcopy(assignment)
+		assignment_1 = copy.deepcopy(assignment)
+		for num in range(len(assignment)):
+			if assignment[num] is None:
+				assignment_0[num] = 0
+				assignment_1[num] = 1
+		if self.expression(assignment_0) == self.expression(assignment_1):
+			return True
+		return False
+
 
 def example42(t):
-	# return ((t[0] or t[1]) and (t[2] or t[3])) or t[4]
-	# return ((0 or t[1]) and t[0]) or (t[4] and (t[2] or t[3]))
-	# return ((t[1] or t[2]) and t[0]) or (t[5] and (t[3] or t[4]))
 	return ((t[1] and t[2]) or t[0]) and (t[3] or t[4])
 
 
-while True:
-	T = Tree(5, example42)
-	c = [1, 1, 1, 1,1]
-	# p = RandomInput.get_random_probabilities(4)
-	p = [0.5, 0.5, 0.5, 0.5,0.5]
-	# p.sort()
-
-	print(T.calculate_strategy_cost([0,4,3,1,1,2,2,3,3,3,3,4,4,4,4,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1], c, p))
-	# print(T.calculate_strategy_cost([1,3,3,5,5,5,5,0,4,0,0,0,0,0,0,2,2,0,0,2,2,2,2,4,4,4,4,4,4,4,4,4,4,4,4,2,2,2,2,4,4,4,4,4,4,4,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2], c,p))
-	# print(T.calculate_strategy_cost([1,5,3,0,3,0,5,2,2,4,4,5,5,0,0,4,4,4,4,0,0,0,0,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2], c,p))
-	#
-
-	# opt = T.get_optimal_adaptive_strategy(c, p)
-	# print(opt)
-	# inf = influence.find_prob_flipping_f(5, example42, p)
-	# print(inf)
-	# while opt[1][0] != np.argsort(inf)[-1]:
-	# 	print("!")
-	# 	print(p)
-	# 	print(opt)
-	# 	print(inf)
-	# 	exit()
-	# print("done")
-	break
+T = Tree(5, example42)
+c = [1, 1, 1, 1, 1]
+p = [0.5, 0.5, 0.5, 0.5, 0.5]
+print(T.calculate_strategy_cost([0,4,3,1,1,2,2,3,3,3,3,4,4,4,4,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1],c,p))
