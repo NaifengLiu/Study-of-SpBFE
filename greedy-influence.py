@@ -4,7 +4,6 @@ from copy import deepcopy as copy
 
 
 def get_strategy(n, p, expression):
-	print("creating strategies")
 	assignment = [None] * n
 	strategy = []
 	for i in range(2 ** n - 1):
@@ -32,6 +31,12 @@ def get_strategy(n, p, expression):
 	for each in strategy:
 		strategy_output.append(each[0])
 
-	print("finished creating strategies")
-	print(len(strategy_output))
 	return strategy_output
+
+
+def exp22(t): return (t[0] or t[1]) and (t[2] or t[3])
+
+
+print(inf(4, exp22, [0.3, 0.6, 0.4, 0.4]))
+
+print(get_strategy(4, [0.3, 0.6, 0.4, 0.4], exp22))
