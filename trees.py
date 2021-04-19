@@ -29,8 +29,3 @@ def generatetrees(maxvarnum):
                         ntrees += [simplify({'gate':'OR', 'children':[copy(smalltree1), copy(smalltree2)]})]
         alltrees[n] = ntrees
     return alltrees
-
-alltrees = generatetrees(5)
-n = 5
-for tree in alltrees[n]:
-    print(tree)
