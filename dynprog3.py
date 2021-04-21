@@ -44,21 +44,14 @@ def getparent(tree, path):
         parent = parent['children'][i]    
     return parent
 
-def findhighestr(tree, costs, probs, dtuple):
-    highpath, r = [], -1
+def findhighestr(tree, costs, probs, dtuple, sibnum):
     classes, paths = getsiblings(tree, [])
-    for sibnum in range(len(dtuple)):
-        if len(classes[sibnum]) > 0 and dtuple[sibnum] > 0:
-            parent = getparent(tree, paths[sibnum])
-            if parent['gate'] == 'OR':
-                ratios = [probs[sibnum][i]/costs[sibnum][i] for i in range(len(costs[sibnum]))]
-            elif parent['gate'] == 'AND':
-                ratios = [(1-probs[sibnum][i])/costs[sibnum][i] for i in range(len(costs[sibnum]))]
-            if sorted(ratios)[dtuple[sibnum]-1] > r:
-                r = sorted(ratios)[dtuple[sibnum]-1]
-                highpath = paths[sibnum] + [np.argsort(-np.array(ratios))[-dtuple[sibnum]]]
-                highsibnum = sibnum
-    return highpath, highsibnum
+    parent = getparent(tree, paths[sibnum])
+    if parent['gate'] == 'OR':
+        ratios = [probs[sibnum][i]/costs[sibnum][i] for i in range(len(costs[sibnum]))]
+    elif parent['gate'] == 'AND':
+        ratios = [(1-probs[sibnum][i])/costs[sibnum][i] for i in range(len(costs[sibnum]))]
+    return np.argsort(-np.array(ratios))[-dtuple[sibnum]]
 
 def eradicatedescendants(tree, parentpath, dtuple):
     classes, paths = getsiblings(tree, [])
@@ -101,23 +94,6 @@ def resolvefalse(tree, parentpath, falsetuple):
                 falsetuple = resolvefalse(tree, parentpath[:-1], falsetuple)
     return falsetuple
 
-def handledtuple(tree, costs, probs, dtuple, expectedcost):
-    highpath, highsibnum = findhighestr(tree, costs, probs, dtuple)
-    parentpath = highpath[:-1]
-    # TRUE ARC
-    truetuple = dtuple[:highsibnum] + (dtuple[highsibnum]-1,) + dtuple[highsibnum+1:]
-    truetuple = resolvetrue(tree, parentpath, truetuple)
-
-    # FALSE ARC
-    falsetuple = dtuple[:highsibnum] + (dtuple[highsibnum]-1,) + dtuple[highsibnum+1:]
-    falsetuple = resolvefalse(tree, parentpath, falsetuple)
-
-    prob = probs[highsibnum][highpath[-1]]
-    cost = costs[highsibnum][highpath[-1]]
-
-    candidate = cost + prob * expectedcost[truetuple] + (1-prob)*expectedcost[falsetuple]
-    return candidate, highpath
-
 def getoptimalcost(tree, costs, probs):
     classes, paths = getsiblings(tree, [])
     sizeclasses = tuple([len(lst) for lst in classes])
@@ -132,13 +108,28 @@ def getoptimalcost(tree, costs, probs):
 
     for m in range(1,sum(sizeclasses)+1):
         for dtuple in reducedtrees[m]:
-            candidate, highpath = handledtuple(tree, costs, probs, dtuple, expectedcost)
-            if candidate < expectedcost[dtuple]:
-                expectedcost[dtuple] = candidate
-                tests[dtuple] = highpath
+            for sibnum in range(len(sizeclasses)):
+                if dtuple[sibnum] > 0:
+                    varindex = findhighestr(tree, costs, probs, dtuple, sibnum)
+                    parentpath = paths[sibnum]
+                    # TRUE ARC
+                    truetuple = dtuple[:sibnum] + (dtuple[sibnum]-1,) + dtuple[sibnum+1:]
+                    truetuple = resolvetrue(tree, parentpath, truetuple)
 
-    largestdtuple = reducedtrees[sum(sizeclasses)][0]
-    return expectedcost[largestdtuple], tests
+                    # FALSE ARC
+                    falsetuple = dtuple[:sibnum] + (dtuple[sibnum]-1,) + dtuple[sibnum+1:]
+                    falsetuple = resolvefalse(tree, parentpath, falsetuple)
+
+                    prob = probs[sibnum][varindex]
+                    cost = costs[sibnum][varindex]
+
+                    candidate = cost + prob * expectedcost[truetuple] + (1-prob)*expectedcost[falsetuple]
+
+                    if candidate < expectedcost[dtuple]:
+                        expectedcost[dtuple] = candidate
+                        tests[dtuple] = {'test': parentpath + [varindex], 'truearc':truetuple, 'falsearc':falsetuple}
+
+    return expectedcost, tests
 
 # GHJM Example
 tree = {'gate':'OR', 'children':['var', 'var', {'gate':'AND', 'children':[{'gate':'OR', 'children':['var', 'var']},{'gate':'OR', 'children':['var', 'var', 'var', 'var', 'var']}]}]}
@@ -158,15 +149,20 @@ tree = {'gate':'AND', 'children':['var', {'gate':'OR', 'children':['var', 'var']
 costs = [[3,2], [2]]
 probs = [[.2, .3], [.71]]
 
-# Exhaustive examples
-#n = 5
+expectedcost, tests = getoptimalcost(tree, costs, probs)
+for dtuple in tests:
+    print(dtuple, tests[dtuple], expectedcost[dtuple])
+
+## Exhaustive examples
+#n = 3
 #alltreesn = trees.generatetrees(n)
+#optcosts = []
 #for tree in alltreesn[n]:
 #    costs, probs = getunit(tree)
-#    print(getoptimalcost(tree, costs, probs))
-
-optcost, tests = getoptimalcost(tree, costs, probs)
-print(optcost)
-for dtuple in tests:
-    print(dtuple, tests[dtuple])
+#    expectedcost, tests = getoptimalcost(tree, costs, probs)
+#    lastdtuple = list(tests.keys())[-1]
+#    optcosts += [expectedcost[lastdtuple]]
+#
+#print(len(optcosts))
+#print(len(list(set(optcosts))))
 
