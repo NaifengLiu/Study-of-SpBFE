@@ -33,10 +33,10 @@ def get_strategy(n, p, expression):
 
 	return strategy_output
 
+if __name__ == "__main__": # file is imported as library to dynprog3
+	def exp22(t): return (t[0] or t[1]) and (t[2] or t[3])
 
-def exp22(t): return (t[0] or t[1]) and (t[2] or t[3])
 
+	#print(inf(4, exp22, [0.3, 0.6, 0.4, 0.4]))
 
-print(inf(4, exp22, [0.3, 0.6, 0.4, 0.4]))
-
-print(get_strategy(4, [0.3, 0.6, 0.4, 0.4], exp22))
+	#print(get_strategy(4, [0.3, 0.6, 0.4, 0.4], exp22))
