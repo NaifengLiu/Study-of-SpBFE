@@ -131,6 +131,20 @@ def getoptimalcost(tree, costs, probs):
 
     return expectedcost, tests
 
+def toexpression(tree):
+    if tree == 'var': return 'var'
+    terms = [toexpression(child) for child in tree['children']]
+    if tree['gate'] == 'AND': joiner = ' and '
+    elif tree['gate'] == 'OR': joiner = ' or '
+    return '(' + joiner.join(terms) + ')'
+
+def numbervars(expression):
+    index = expression.index('var')
+    newexpression = expression[:index]
+    for i in range(expression.count('var')):
+        expression = expression.replace('var', 't['+str(i)+']', 1)
+    return expression
+
 # GHJM Example
 tree = {'gate':'OR', 'children':['var', 'var', {'gate':'AND', 'children':[{'gate':'OR', 'children':['var', 'var']},{'gate':'OR', 'children':['var', 'var', 'var', 'var', 'var']}]}]}
 costs = [[1,1], [1,1,2,2,3], [], [1,1]]
@@ -149,9 +163,9 @@ tree = {'gate':'AND', 'children':['var', {'gate':'OR', 'children':['var', 'var']
 costs = [[3,2], [2]]
 probs = [[.2, .3], [.71]]
 
-expectedcost, tests = getoptimalcost(tree, costs, probs)
-for dtuple in tests:
-    print(dtuple, tests[dtuple], expectedcost[dtuple])
+#expectedcost, tests = getoptimalcost(tree, costs, probs)
+#for dtuple in tests:
+#    print(dtuple, tests[dtuple], expectedcost[dtuple])
 
 ## Exhaustive examples
 #n = 3
