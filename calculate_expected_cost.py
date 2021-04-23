@@ -121,42 +121,42 @@ class Tree:
 			return True
 		return False
 
-
-# assignment_0 = copy.deepcopy(assignment)
-# assignment_1 = copy.deepcopy(assignment)
-# for num in range(len(assignment)):
-# 	if assignment[num] is None:
-# 		assignment_0[num] = 0
-# 		assignment_1[num] = 1
-# if self.expression(assignment_0) == self.expression(assignment_1):
-# 	return True
-# return False
-
-
-def example42(t):
-	# return ((t[1] and t[2]) or t[0]) and (t[3] or t[4])
-	return 3 * t[1] + 2 * t[0] + t[2] + 3 * t[3] >= 3
+if __name__ == "__main__": # file is imported as library to dynprog3
+	# assignment_0 = copy.deepcopy(assignment)
+	# assignment_1 = copy.deepcopy(assignment)
+	# for num in range(len(assignment)):
+	# 	if assignment[num] is None:
+	# 		assignment_0[num] = 0
+	# 		assignment_1[num] = 1
+	# if self.expression(assignment_0) == self.expression(assignment_1):
+	# 	return True
+	# return False
 
 
-# for _ in tqdm.tqdm(range(1000)):
-# 	T = Tree(4, example42)
-# 	c = [1, 1, 1, 1]
-# 	w = [2, 3, 1, 3]
-# 	p = RandomInput.get_random_probabilities(4)
-# 	pw = [p[i]*w[i] for i in range(4)]
-# 	opt = T.get_optimal_adaptive_strategy(costs=c, probs=p, verification=1)
-# 	if np.argmax(pw) != opt[1][0]:
-# 		print(p)
-# 		print(opt)
-# 		print(p[0] * 2, p[1] * 3, p[2], p[3] * 3)
+	def example42(t):
+		# return ((t[1] and t[2]) or t[0]) and (t[3] or t[4])
+		return 3 * t[1] + 2 * t[0] + t[2] + 3 * t[3] >= 3
 
 
-T = Tree(4, example42)
-c = [1, 1, 1, 1]
-w = [2, 3, 1, 3]
-p = [0.9, 0.3, 0.3, 0.2]
+	# for _ in tqdm.tqdm(range(1000)):
+	# 	T = Tree(4, example42)
+	# 	c = [1, 1, 1, 1]
+	# 	w = [2, 3, 1, 3]
+	# 	p = RandomInput.get_random_probabilities(4)
+	# 	pw = [p[i]*w[i] for i in range(4)]
+	# 	opt = T.get_optimal_adaptive_strategy(costs=c, probs=p, verification=1)
+	# 	if np.argmax(pw) != opt[1][0]:
+	# 		print(p)
+	# 		print(opt)
+	# 		print(p[0] * 2, p[1] * 3, p[2], p[3] * 3)
 
-print(T.calculate_strategy_cost([0,1,1,3,3,2,2,2,2,2,2,3,3,3,3], c, p, verification=1))
-# print(T.calculate_strategy_cost([0, 4, 3, 1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1], c, p, verification=1))
-# print(T.calculate_strategy_cost([0, 4, 3, 1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1], c, p, verification=1))
-# print(T.calculate_strategy_cost([0, 4, 3, 1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1], c, p, verification=0))
+
+	#T = Tree(4, example42)
+	#c = [1, 1, 1, 1]
+	#w = [2, 3, 1, 3]
+	#p = [0.9, 0.3, 0.3, 0.2]
+
+	#print(T.calculate_strategy_cost([0,1,1,3,3,2,2,2,2,2,2,3,3,3,3], c, p, verification=1))
+	# print(T.calculate_strategy_cost([0, 4, 3, 1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1], c, p, verification=1))
+	# print(T.calculate_strategy_cost([0, 4, 3, 1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1], c, p, verification=1))
+	# print(T.calculate_strategy_cost([0, 4, 3, 1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1], c, p, verification=0))
