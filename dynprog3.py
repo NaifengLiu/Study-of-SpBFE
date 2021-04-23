@@ -3,6 +3,9 @@ import itertools
 from copy import deepcopy as copy
 import numpy as np
 
+import greedy_influence
+import calculate_expected_cost
+
 def getsiblings(tree, path):
     currentclass = []
     allpaths = []
@@ -131,19 +134,23 @@ def getoptimalcost(tree, costs, probs):
 
     return expectedcost, tests
 
-def toexpression(tree):
+def topartial(tree):
     if tree == 'var': return 'var'
-    terms = [toexpression(child) for child in tree['children']]
+    terms = [topartial(child) for child in tree['children']]
     if tree['gate'] == 'AND': joiner = ' and '
     elif tree['gate'] == 'OR': joiner = ' or '
     return '(' + joiner.join(terms) + ')'
 
-def numbervars(expression):
-    index = expression.index('var')
-    newexpression = expression[:index]
-    for i in range(expression.count('var')):
-        expression = expression.replace('var', 't['+str(i)+']', 1)
-    return expression
+def numbervars(partial):
+    index = partial.index('var')
+    for i in range(partial.count('var')):
+        partial = partial.replace('var', 't['+str(i)+']', 1)
+    return partial
+
+def toexpression(tree):
+    partial = topartial(tree)
+    expression = numbervars(partial)
+    return lambda t : eval(expression)
 
 # GHJM Example
 tree = {'gate':'OR', 'children':['var', 'var', {'gate':'AND', 'children':[{'gate':'OR', 'children':['var', 'var']},{'gate':'OR', 'children':['var', 'var', 'var', 'var', 'var']}]}]}
@@ -167,16 +174,28 @@ probs = [[.2, .3], [.71]]
 #for dtuple in tests:
 #    print(dtuple, tests[dtuple], expectedcost[dtuple])
 
-## Exhaustive examples
-#n = 3
-#alltreesn = trees.generatetrees(n)
-#optcosts = []
-#for tree in alltreesn[n]:
-#    costs, probs = getunit(tree)
-#    expectedcost, tests = getoptimalcost(tree, costs, probs)
-#    lastdtuple = list(tests.keys())[-1]
-#    optcosts += [expectedcost[lastdtuple]]
-#
-#print(len(optcosts))
-#print(len(list(set(optcosts))))
+def getgreedyinfluencecost(n, tree):
+    exp = toexpression(tree)
+    c, p = [1]*n, [.5]*n
+    strategy = greedy_influence.get_strategy(n, p, exp)
+    T = calculate_expected_cost.Tree(n,exp)
+    return T.calculate_strategy_cost(strategy, c, p)
+
+if __name__ == "__main__":
+    # Exhaustive examples
+    n = 6
+    alltreesn = trees.generatetrees(n)
+    optcosts = []
+    for tree in alltreesn[n]:
+        costs, probs = getunit(tree)
+        expectedcost, tests = getoptimalcost(tree, costs, probs)
+        lastdtuple = list(tests.keys())[-1]
+        optcost = expectedcost[lastdtuple]
+        greedycost = getgreedyinfluencecost(n, tree)
+        optcosts += [optcost]
+        print(optcost, greedycost)
+        assert optcost == greedycost
+
+    print(len(optcosts))
+    print(len(list(set(optcosts))))
 
