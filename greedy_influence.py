@@ -10,11 +10,6 @@ def get_strategy(n, p, expression):
 	for i in range(2 ** n - 1):
 		if i == 0:
 			influences1 = inf(n, expression, p)
-			print(expression([[0,0,0,0,1,0,1], [0,0,0,0,1,0,0]]))
-			print(n)
-			influences2 = influencesfromexpression(n, expression, [1/2**n]*2**n)
-			print(influences1)
-			print(influences2)
 			strategy.append([np.argmax(influences1), assignment])
 		else:
 			tmp_p = copy(p)
