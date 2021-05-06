@@ -36,36 +36,24 @@ def influencefromexpression(n, expression, distribution):
 
 def influenceifromexpression(n, expression, distribution, i, test=True):
     fcoeffs = decomposefromexpression(n, expression, distribution, test=test)
-    if test:
-        assert influencefromexpression(n, expression, distribution) == sum([infi(i, fcoeffs, n) for i in range(n)])
-    return infi(i, fcoeffs, n)
+    influence = infi(i, fcoeffs, n)
+    return influence
 
 def influencesfromexpression(n, expression, distribution, test=True):
-    newexpression = lambda t : [-1, 1][expression(t)]
-    influences = []
-    for i in range(n):
-        influences += [influenceifromexpression(n, newexpression, distribution, i, test=test)]
+    assert len(distribution) == 2**n
+    newexpression = lambda t : [-1,1][expression(t)]
+    fcoeffs = decomposefromexpression(n, newexpression, distribution, test=test)    
+    influences = [infi(i,fcoeffs,n) for i in range(n)]
+    if test:
+        assert influencefromexpression(n, newexpression, distribution) == sum(influences)
     return influences
-
-# FROM VECTOR FORM #
-
-def decomposefromvec(n, fvec, distribution):
-    return np.array([fcoeff(subset(bstring), n, fvec, distribution) for bstring in binary(n)]) 
-   
-def influencefromvec(n, fvec, distribution):
-    fcoeffs = decomposefromvec(n, fvec, distribution)
-    return sum([fcoeffs[num]**2*convert(num,n).count('1') for num in np.arange(2**n)])
-
-def influenceifromvec(n, fvec, distribution, i):
-    fcoeffs = decomposefromvec(n, fvec, distribution)
-    return infi(i, fcoeffs, n)
 
 if __name__ == "__main__":
     # INPUTS #
-    n = 3
-    expression = lambda x : [1,-1][(x[0] and x[1]) or x[2]] # function
-    #expression = lambda x : [1,-1][((x[1] or x[2]) and x[0]) or (x[5] and (x[3] or x[4]))] # function
+    n = 6
+    def expression(t): return ((t[1] or t[2]) and t[0]) or (t[5] and (t[3] or t[4]))
     distribution = np.array([1/2**n]*2**n) # distribution for inner product
-    infi = influenceifromexpression(n, expression, distribution, 2)
-    print(infi)
+    influences = influencesfromexpression(n, expression, distribution)
+    assert influences == [0.46875, 0.15625, 0.15625, 0.15625, 0.15625, 0.46875]
+
 
