@@ -1,5 +1,6 @@
 import numpy as np
 from influence import find_influences as inf
+from fourier import influencesfromexpression
 from copy import deepcopy as copy
 
 
@@ -8,7 +9,13 @@ def get_strategy(n, p, expression):
 	strategy = []
 	for i in range(2 ** n - 1):
 		if i == 0:
-			strategy.append([np.argmax(inf(n, expression, p)), assignment])
+			influences1 = inf(n, expression, p)
+			print(expression([[0,0,0,0,1,0,1], [0,0,0,0,1,0,0]]))
+			print(n)
+			influences2 = influencesfromexpression(n, expression, [1/2**n]*2**n)
+			print(influences1)
+			print(influences2)
+			strategy.append([np.argmax(influences1), assignment])
 		else:
 			tmp_p = copy(p)
 			parent_strategy = strategy[(i - 1) // 2]

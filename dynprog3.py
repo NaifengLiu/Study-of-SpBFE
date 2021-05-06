@@ -99,6 +99,7 @@ def resolvefalse(tree, parentpath, falsetuple):
 
 def getoptimalcost(tree, costs, probs):
     classes, paths = getsiblings(tree, [])
+    print(classes)
     sizeclasses = tuple([len(lst) for lst in classes])
     reducedtrees = getreducedtrees(sizeclasses)
 
@@ -178,6 +179,7 @@ def getgreedyinfluencecost(n, tree, p=.5):
     exp = toexpression(tree)
     c, p = [1]*n, [p]*n
     strategy = greedy_influence.get_strategy(n, p, exp)
+    #print(strategy)
     T = calculate_expected_cost.Tree(n,exp)
     return T.calculate_strategy_cost(strategy, c, p)
 
@@ -186,15 +188,21 @@ if __name__ == "__main__":
     n, p = 7, .5
     alltreesn = trees.generatetrees(n)
     optcosts = []
-    #for i in range(len(alltreesn[n])):
-    #tree = alltreesn[n][i]
-    #print(i)
-    tree = alltreesn[n][377]
+    #for numvar in range(2,n+1):
+    #    print(numvar)
+    #    for i in range(len(alltreesn[numvar])):
+    #        tree = alltreesn[numvar][i]
+    #        print(i)
+    tree = alltreesn[7][377]
+    numvar = 7
+    print(tree)
     costs, probs = getunit(tree, p)
     expectedcost, tests = getoptimalcost(tree, costs, probs)
-    lastdtuple = list(tests.keys())[-1]
-    optcost = expectedcost[lastdtuple]
-    greedycost = getgreedyinfluencecost(n, tree, p)
+    print(tests)
+    for key in tests:
+        print(key, tests[key])
+    optcost = expectedcost[list(tests.keys())[-1]]
+    greedycost = getgreedyinfluencecost(numvar, tree, p)
     optcosts += [optcost]
     print(optcost, greedycost)
     assert np.allclose(optcost, greedycost)
