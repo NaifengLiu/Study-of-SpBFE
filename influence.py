@@ -70,7 +70,10 @@ def find_influences(n, expression, p):
 # def exp(t): return ((t[0] or t[1]) and (t[2] or t[3])) or t[4]
 # def exp(t): return 1 if sum(t) == len(t) or sum(t) == 0 else 0
 # def exp(t): return 1 if sum(t) >= 3 else 0
-# def exp(t): return ((t[1] or t[2]) and t[0]) or (t[5] and (t[3] or t[4]))
+if __name__ == "__main__":
+	def exp(t): return ((t[1] or t[2]) and t[0]) or (t[5] and (t[3] or t[4]))
+	influences = find_influences(6, exp, p=[.5]*6)
+	print(influences)
 # def exp(t): return (t[1] or t[2]) and t[0]
 
 
