@@ -85,6 +85,7 @@ class Formula:
 
 	def show(self):
 		print(self.f.to_string())
+		# print('Done')
 		return self.f.to_string()
 
 	def find_gate_contains_variable(self, variable):
@@ -110,54 +111,67 @@ class Formula:
 		return ret
 
 	def resolve(self, variable, value):
+		# print(variable)
 		parent = self.find_gate_contains_variable(variable)[1]
 		parent.remove(variable)
 		parent.add_variable(str(value))
-		self.show()
+		# self.show()
 		self.if_resolved(f.f)
-		self.show()
-		self.simplify_tree(f.f)
+		# self.show()
+		# self.simplify_tree(f.f)
 		self.show()
 
 	def if_resolved(self, gate):
-		types = []
+		# count_resolved = []
+		child_unresolved = False
 		for i in range(len(gate.variables)):
 			each = gate.variables[i]
 			if type(each) is Gate:
 				if self.if_resolved(each) is True:
 					if (gate.gate_type == 'AND' and each.value == '0') or (gate.gate_type == 'OR' and each.value == '1'):
-						types.append(1)
-					else:
-						types.append(0)
+						gate.value = each.value
+						gate.resolved = True
+						return True
+					elif not each.resolved:
+						child_unresolved = True
+
 			elif type(each) is str:
 				if (gate.gate_type == 'AND' and each == '0') or (gate.gate_type == 'OR' and each == '1'):
-					types.append(1)
 					gate.value = each
-				else:
-					types.append(0)
-		if sum(types) == 0:
+					gate.resolved = True
+					return True
+				elif not str(each[0]).isdigit():
+					child_unresolved = True
+		# if sum(count_resolved) == 0:
+		# 	gate.resolved = False
+		# 	return False
+
+		if child_unresolved:
 			gate.resolved = False
 			return False
-		gate.resolved = True
+		gate.value = '0' if gate.gate_type == 'OR' else '1'
 		return True
 
-	def simplify_tree(self, gate):
-		resolved_class_parent = None
-		resolved_class = None
-		for i in range(len(gate.variables)):
-			each = gate.variables[i]
-			if type(each) is Gate:
-				if each.resolved is True:
-					resolved_class = each
-					resolved_class_parent = self.find_gate_contains_variable(each)[1]
-				else:
-					self.simplify_tree(each)
-			elif type(each) is str:
-				if str(each[0]).isdigit():
-					resolved_class = gate
-					resolved_class_parent = self.find_gate_contains_variable(gate)[1]
-		if resolved_class is not None:
-			resolved_class_parent.remove(resolved_class)
+	# def simplify_tree(self, gate):
+	# 	resolved_class_parent = None
+	# 	resolved_class = None
+	# 	resolved_variable = None
+	# 	resolved_variable_parent = None
+	# 	for i in range(len(gate.variables)):
+	# 		each = gate.variables[i]
+	# 		if type(each) is Gate:
+	# 			if each.resolved is True:
+	# 				resolved_class = each
+	# 				resolved_class_parent = self.find_gate_contains_variable(each)[1]
+	# 			else:
+	# 				self.simplify_tree(each)
+	# 		# elif type(each) is str:
+	# 		# 	if str(each[0]).isdigit():
+	# 		# 		resolved_variable = each
+	# 		# 		resolved_variable_parent =
+	#
+	# 	if resolved_class is not None:
+	# 		resolved_class_parent.remove(resolved_class)
 
 
 def OR(children: list):
@@ -264,6 +278,8 @@ f = Formula(OR([AND(['x0', 'x1', 'x7']), AND([OR(['x2', 'x3']), OR(['x4', 'x5'])
 # print(f.find_gate_contains_variable('x0'))
 f.show()
 f.resolve('x0', 1)
+f.resolve('x1', 1)
+f.resolve('x7', 1)
 # f.show()
 
 # tmp = generate_all_read_once_functions(5)[5][-1]

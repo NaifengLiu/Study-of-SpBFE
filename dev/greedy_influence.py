@@ -28,7 +28,7 @@ def get_strategy(n, p, expression):
 						break
 				strategy.append([first_not_tested, new_assignment])
 			else:
-				strategy.append([np.argmax(inf(n, expression, tmp_p)), new_assignment])
+				strategy.append([np.argmax(influences), new_assignment])
 	strategy_output = []
 	for each in strategy:
 		strategy_output.append(each[0])
