@@ -152,6 +152,10 @@ class Formula:
 					resolved_class_parent = self.find_gate_contains_variable(each)[1]
 				else:
 					self.simplify_tree(each)
+			elif type(each) is str:
+				if str(each[0]).isdigit():
+					resolved_class = gate
+					resolved_class_parent = self.find_gate_contains_variable(gate)[1]
 		if resolved_class is not None:
 			resolved_class_parent.remove(resolved_class)
 
@@ -259,7 +263,7 @@ def generate_all_read_once_functions(num_of_vars):
 f = Formula(OR([AND(['x0', 'x1', 'x7']), AND([OR(['x2', 'x3']), OR(['x4', 'x5']), 'x6'])]))
 # print(f.find_gate_contains_variable('x0'))
 f.show()
-f.resolve('x0', 0)
+f.resolve('x0', 1)
 # f.show()
 
 # tmp = generate_all_read_once_functions(5)[5][-1]
