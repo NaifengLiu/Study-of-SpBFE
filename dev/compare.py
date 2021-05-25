@@ -1,6 +1,6 @@
-from DFA import Gate, Formula
+from dev.DFA import Gate, Formula
 import numpy as np
-from influence import find_influences as inf
+from dev.influence import find_influences as inf
 from copy import deepcopy as copy
 
 gate_1 = Gate('OR')

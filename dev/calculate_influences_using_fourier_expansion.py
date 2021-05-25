@@ -1,6 +1,8 @@
 import sympy
 import math
 
+from dev import function_expectation
+
 
 # def exp(t): return (t[1] or t[2]) and t[0]
 # def exp(t): return ((t[0] or t[1]) and (t[2] or t[3])) or t[4]
@@ -52,6 +54,11 @@ def f(n, expression, probabilities):
 	# print(formula)
 	formula = sympy.simplify(formula)
 	# print(formula)
+	print(formula)
+	for i in x:
+		formula = formula.subs(i, 0)
+	print(formula)
+	print(function_expectation.expectation(n, expression, probabilities))
 
 	# mu = sympy.Symbol('m')
 	# sigma = sympy.Symbol('s')
@@ -67,25 +74,25 @@ def f(n, expression, probabilities):
 	# lambdified_formula = sympy.lambdify([x], formula, 'numpy')
 	# print()
 
-	for i in x:
-		print(i, end=' : ')
-		tmp = str(formula.coeff(i))
-		for j in range(n):
-			tmp = tmp.replace('x'+str(j), '1')
-
-		tmp = tmp.replace(' ', '')
-		tmp = tmp.replace('-', ',')
-		tmp = tmp.replace('+', ',')
-		if not tmp[0].isdigit():
-			tmp = tmp[1:]
-		# print(tmp)
-		tmp_list = tmp.split(',')
-		tmp_list = map(eval, tmp_list)
-		print(squared_sum(tmp_list))
-		# print(formula.coeff(i))
-
-	print()
-	return truth_table
+	# for i in x:
+	# 	print(i, end=' : ')
+	# 	tmp = str(formula.coeff(i))
+	# 	for j in range(n):
+	# 		tmp = tmp.replace('x'+str(j), '1')
+	#
+	# 	tmp = tmp.replace(' ', '')
+	# 	tmp = tmp.replace('-', ',')
+	# 	tmp = tmp.replace('+', ',')
+	# 	if not tmp[0].isdigit():
+	# 		tmp = tmp[1:]
+	# 	# print(tmp)
+	# 	tmp_list = tmp.split(',')
+	# 	tmp_list = map(eval, tmp_list)
+	# 	print(squared_sum(tmp_list))
+	# 	# print(formula.coeff(i))
+	#
+	# print()
+	# return truth_table
 
 
 # f(3, exp, [0.4,0.9,0.3])

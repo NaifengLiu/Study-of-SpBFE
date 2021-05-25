@@ -15,7 +15,6 @@ def simplify(tree):
 
 def generatetrees(maxvarnum):
     alltrees = {1:['var']}
-
     for n in range(2, maxvarnum+1):
         ntrees = []
         partition = [(i,n-i) for i in range(1,n//2+1)]

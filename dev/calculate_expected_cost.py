@@ -1,10 +1,7 @@
 import copy
-import strategy_generation
 import tqdm
-import RandomInput
 import numpy as np
-import influence
-
+from dev import influence, RandomInput, strategy_generation
 
 print("generating strategies ... ")
 strategies = strategy_generation.generate(4)
@@ -135,7 +132,32 @@ if __name__ == "__main__": # file is imported as library to dynprog3
 
 	def example42(t):
 		# return ((t[1] and t[2]) or t[0]) and (t[3] or t[4])
-		return 3 * t[1] + 2 * t[0] + t[2] + 3 * t[3] >= 3
+		return (t[0] and t[1]) or ((t[2] or t[3]) and (t[4] or t[5]) and t[6])
+
+	T = Tree(7, example42)
+	c = [1]*7
+	p = [.5]*7
+
+	s = [0]*(2**7-1)
+	# print(len(s))
+	s[0]=0
+	s[1]=6
+	s[2]=1
+	s[4]=2
+	s[5]=6
+	s[9]=3
+	s[10]=4
+	s[12]=2
+	s[20]=4
+	s[21]=5
+	s[25]=3
+	s[26]=4
+	s[41]=5
+	s[52]=4
+	s[53]=5
+	s[103]=5
+
+	print(T.calculate_strategy_cost(s, c, p))
 
 
 	# for _ in tqdm.tqdm(range(1000)):

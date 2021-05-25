@@ -1,6 +1,6 @@
 import numpy as np
-from influence import find_influences as inf
-from fourier import influencesfromexpression
+from dev.influence import find_influences as inf
+from dev.fourier import influencesfromexpression
 from copy import deepcopy as copy
 
 
@@ -42,3 +42,5 @@ if __name__ == "__main__": # file is imported as library to dynprog3
 	#print(inf(4, exp22, [0.3, 0.6, 0.4, 0.4]))
 
 	#print(get_strategy(4, [0.3, 0.6, 0.4, 0.4], exp22))
+
+

@@ -1,10 +1,9 @@
-import trees
 import itertools
 from copy import deepcopy as copy
 import numpy as np
 
-import greedy_influence
-import calculate_expected_cost
+from dev import greedy_influence, calculate_expected_cost, trees
+
 
 def getsiblings(tree, path):
     currentclass = []
@@ -180,7 +179,7 @@ def getgreedyinfluencecost(n, tree, p=.5):
     c, p = [1]*n, [p]*n
     strategy = greedy_influence.get_strategy(n, p, exp)
     #print(strategy)
-    T = calculate_expected_cost.Tree(n,exp)
+    T = calculate_expected_cost.Tree(n, exp)
     return T.calculate_strategy_cost(strategy, c, p)
 
 if __name__ == "__main__":
