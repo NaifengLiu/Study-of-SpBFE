@@ -54,6 +54,9 @@ class Formula:
 	def __init__(self, gate: Gate):
 		self.f = gate
 		self.sibling_classes = [[], [], []]
+		self.dnf_size = self.count_dnf(gate)
+		self.cnf_size = self.count_cnf(gate)
+		self.goal_value = self.cnf_size * self.dnf_size
 		self.get_sibling_classes(self.f)
 		self.array_type = [[], []]
 		self.get_array_type(self.f)
@@ -119,8 +122,43 @@ class Formula:
 		self.if_resolved(f.f)
 		# self.show()
 		# self.simplify_tree(f.f)
+		self.dnf_size = self.count_dnf(self.f)
+		self.cnf_size = self.count_cnf(self.f)
+		self.goal_value = self.cnf_size * self.dnf_size
 		self.show()
 
+	def count_dnf(self, gate):
+		total = 1 if gate.gate_type == 'AND' else 0
+		for i in range(len(gate.variables)):
+			each = gate.variables[i]
+			if type(each) is Gate:
+				if not each.resolved:
+					newnum = self.count_dnf(each)
+					if gate.gate_type == 'AND': total *= newnum
+					if gate.gate_type == 'OR': total += newnum
+			if type(each) is str:
+				if not str(each[0]).isdigit():
+					newnum = 1
+					if gate.gate_type == 'AND': total *= newnum
+					if gate.gate_type == 'OR': total += newnum
+		return total
+
+	def count_cnf(self, gate):
+		total = 0 if gate.gate_type == 'AND' else 1
+		for i in range(len(gate.variables)):
+			each = gate.variables[i]
+			if type(each) is Gate:
+				if not each.resolved:
+					newnum = self.count_cnf(each)
+					if gate.gate_type == 'AND': total += newnum
+					if gate.gate_type == 'OR': total *= newnum
+			if type(each) is str:
+				if not str(each[0]).isdigit():
+					newnum = 1
+					if gate.gate_type == 'AND': total += newnum
+					if gate.gate_type == 'OR': total *= newnum
+		return total
+		
 	def if_resolved(self, gate):
 		# count_resolved = []
 		child_unresolved = False
@@ -274,12 +312,14 @@ def generate_all_read_once_functions(num_of_vars):
 	return ret
 
 
-f = Formula(OR([AND(['x0', 'x1', 'x7']), AND([OR(['x2', 'x3']), OR(['x4', 'x5']), 'x6'])]))
+f = Formula(OR([AND(['x0', 'x1', 'x7']), AND(['x8', 'x9']), AND([OR(['x2', 'x3']), OR(['x4', 'x5']), 'x6'])]))
 # print(f.find_gate_contains_variable('x0'))
 f.show()
 f.resolve('x0', 1)
-f.resolve('x1', 1)
-f.resolve('x7', 1)
+f.resolve('x9', 0)
+f.resolve('x5', 1)
+print(f.dnf_size)
+print(f.cnf_size)
 # f.show()
 
 # tmp = generate_all_read_once_functions(5)[5][-1]
