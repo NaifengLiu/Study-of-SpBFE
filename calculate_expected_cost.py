@@ -1,8 +1,6 @@
-import copy
 # import strategy_generation
-import tqdm
 # import RandomInput
-import numpy as np
+
 import influence
 import operator
 from BinaryTree import Node as BNode
@@ -31,9 +29,10 @@ class Node:
 
 
 class Tree:
-	def __init__(self, n, expression, func, probabilities):
+	def __init__(self, n, formula, func, probabilities):
 		self.max_level = n
-		self.expression = expression
+		self.expression = formula.lambda_type
+		self.formula = formula
 		self.probabilities = probabilities
 		self.func = func
 		self.root = self.build_tree()
@@ -122,14 +121,35 @@ def greedy_influence(node: Node, tree: Tree):
 	return int(max(influences.items(), key=operator.itemgetter(1))[0][1:])
 
 
+def greedy_goal_value(node: Node, tree: Tree):
+	n = tree.max_level
+	prob = tree.probabilities
+	formula = tree.formula
+	assignment = node.assignment
+
+	tmp = []
+
+	for i in range(len(assignment)):
+		if assignment[i] is not None:
+			formula.resolve('x'+str(i), assignment[i])
+
+	for i in range(len(assignment)):
+		t = 1
+		if assignment[i] is None:
+			tmp_formula = copy(formula)
+			tmp_formula.resolve('x'+str(i), 0)
+			# goal_0 = tmp_formula.
+
+
+
 # you can either
 f = Formula(OR([AND(['x0', 'x1']), AND([OR(['x2', 'x3']), OR(['x4', 'x5']), 'x6'])]))
-example = Tree(7, f.lambda_type, greedy_influence, [.5] * 7)
+example = Tree(7, f, greedy_influence, [.5] * 7)
 print(example.calculate_expected_cost())
 example.print()
 
 # or
-def read_once(x): return (x[0] and x[1]) or ((x[2] or x[3]) and (x[4] or x[5]) and x[6])
-example2 = Tree(7, read_once, greedy_influence, [.5] * 7)
-print(example2.calculate_expected_cost())
-example2.ppprint()
+f = Formula(OR([AND(['x0', 'x1']), AND([OR(['x2', 'x3']), OR(['x4', 'x5']), 'x6'])]))
+example = Tree(7, f, greedy_goal_value, [.5] * 7)
+print(example.calculate_expected_cost())
+example.print()
