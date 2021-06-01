@@ -73,6 +73,13 @@ class Tree:
             if node.leaf is True:
                 return node.probability_to_reach_this_node * node.cost_to_reach_this_node
             return self.calculate_tree_cost(node.lchild, verification) + self.calculate_tree_cost(node.rchild, verification)
+        else:
+            if node.leaf is True:
+                if node.boolean_value == verification:
+                    return node.probability_to_reach_this_node * node.cost_to_reach_this_node
+                else:
+                    return 0
+            return self.calculate_tree_cost(node.lchild, verification) + self.calculate_tree_cost(node.rchild, verification)
 
     def build_print_tree(self, node):
         if node.leaf is not True:
@@ -145,13 +152,14 @@ def greedy_goal_value(node: Node, tree: Tree):
                 best_test = i
     return best_test
 
-## you can either
+
+# you can either
 f = Formula(OR([AND(['x0', 'x1']), AND([OR(['x2', 'x3']), OR(['x4', 'x5']), 'x6'])]))
 example = Tree(7, f, greedy_influence, [.5] * 7)
 print(example.calculate_expected_cost())
 example.print()
 #
-## or
+# or
 f = Formula(OR([AND(['x0', 'x1']), AND([OR(['x2', 'x3']), OR(['x4', 'x5']), 'x6'])]))
 example = Tree(7, f, greedy_goal_value, [.5] * 7)
 print(example.calculate_expected_cost())
