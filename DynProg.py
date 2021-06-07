@@ -3,7 +3,8 @@ from copy import deepcopy as copy
 import numpy as np
 
 from dev import greedy_influence, calculate_expected_cost, trees
-
+from BinaryTree import Node as BNode
+from ppbtree import print_tree
 
 def getsiblings(tree, path):
     currentclass = []
@@ -98,7 +99,6 @@ def resolvefalse(tree, parentpath, falsetuple):
 
 def getoptimalcost(tree, costs, probs):
     classes, paths = getsiblings(tree, [])
-    print(classes)
     sizeclasses = tuple([len(lst) for lst in classes])
     reducedtrees = getreducedtrees(sizeclasses)
 
@@ -182,30 +182,102 @@ def getgreedyinfluencecost(n, tree, p=.5):
     T = calculate_expected_cost.Tree(n, exp)
     return T.calculate_strategy_cost(strategy, c, p)
 
-if __name__ == "__main__":
-    # Exhaustive examples
-    n, p = 7, .5
-    alltreesn = trees.generatetrees(n)
-    optcosts = []
-    #for numvar in range(2,n+1):
-    #    print(numvar)
-    #    for i in range(len(alltreesn[numvar])):
-    #        tree = alltreesn[numvar][i]
-    #        print(i)
-    tree = alltreesn[7][377]
-    numvar = 7
-    print(tree)
-    costs, probs = getunit(tree, p)
-    expectedcost, tests = getoptimalcost(tree, costs, probs)
-    print(tests)
-    for key in tests:
-        print(key, tests[key])
-    optcost = expectedcost[list(tests.keys())[-1]]
-    greedycost = getgreedyinfluencecost(numvar, tree, p)
-    optcosts += [optcost]
-    print(optcost, greedycost)
-    assert np.allclose(optcost, greedycost)
+def buildstrategy(tree, expectedcost, tests):
+    reducedtree = list(tests.keys())[-1]
+    tree = renametree(tree)
+    strategy = recursivestrategy(reducedtree, tests=tests, tree=tree)
+    return strategy
 
-    print(len(optcosts))
-    print(len(list(set(optcosts))))
+
+def recursivestrategy(reducedtree, tests, tree):
+    path = tests[reducedtree]['test']
+    current = copy(tree)
+    for i in path:
+        current = current['children'][i]
+    root = BNode(current)
+    if tests[reducedtree]['falsearc'] != (0,)*len(reducedtree):
+        root.left = recursivestrategy(tests[reducedtree]['falsearc'], tests, tree)
+    else:
+        root.left = BNode('-')
+    if tests[reducedtree]['truearc'] != (0,)*len(reducedtree):
+        root.right = recursivestrategy(tests[reducedtree]['truearc'], tests, tree)
+    else:
+        root.right = BNode('+')
+    return root
+
+def fixtree(tree):
+    variables, gates = [], []
+    for i in range(len(tree['children'])):
+        if tree['children'][i] == 'var':
+            variables += ['var']
+        else:
+            gates += [fixtree(tree['children'][i])]
+    return {'gate':tree['gate'], 'children':variables+gates}
+
+def renametree(tree):
+    children = []
+    for i in range(len(tree['children'])):
+        if tree['children'][i] == 'var':
+            global currentnum
+            children += ['x'+str(currentnum)]
+            currentnum += 1
+        else:
+            children += [renametree(tree['children'][i])]
+    return {'gate':tree['gate'], 'children':children}
+
+def checkincreasing(strategy):
+    if strategy.right.value not in ['+', '-']:
+        if int(strategy.right.value[1]) < int(strategy.value[1]):
+            return True
+        if checkincreasing(strategy.right):
+            return True
+    if strategy.left.value not in ['+', '-']:
+        if int(strategy.left.value[1]) < int(strategy.value[1]):
+            return True
+        if checkincreasing(strategy.left):
+            return True
+    return False
+
+
+if __name__ == "__main__":
+    n, p = 6, .5
+    alltreesn = trees.generatetrees(n)
+    for treenum in range(len(alltreesn[n])):
+        currentnum = 1 # VERY sketch
+        tree = fixtree(alltreesn[n][treenum])
+        costs, probs = getunit(tree, p)
+        expectedcost, tests = getoptimalcost(tree, costs, probs)
+        strategy = buildstrategy(tree, expectedcost, tests)
+        outoforder = checkincreasing(strategy)
+        if outoforder:
+            strategy.pprint()
+            classes, paths = getsiblings(tree, [])
+            print(classes)
+
+
+#    # Exhaustive examples
+#    n, p = 7, .5
+#    alltreesn = trees.generatetrees(n)
+#    optcosts = []
+#    #for numvar in range(2,n+1):
+#    #    print(numvar)
+#    #    for i in range(len(alltreesn[numvar])):
+#    #        tree = alltreesn[numvar][i]
+#    #        print(i)
+#    tree = alltreesn[7][377]
+#    numvar = 7
+#    #print(tree)
+#    costs, probs = getunit(tree, p)
+#    expectedcost, tests = getoptimalcost(tree, costs, probs)
+#    print(tests)
+#    for key in tests:
+#        print(key, tests[key])
+#    optcost = expectedcost[list(tests.keys())[-1]]
+#    greedycost = getgreedyinfluencecost(numvar, tree, p)
+#    optcosts += [optcost]
+#    print(optcost, greedycost)
+#    #assert np.allclose(optcost, greedycost)
+#
+#    #print(len(optcosts))
+#    #print(len(list(set(optcosts))))
 
