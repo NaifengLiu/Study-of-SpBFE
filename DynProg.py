@@ -6,6 +6,8 @@ from dev import greedy_influence, calculate_expected_cost, trees
 from BinaryTree import Node as BNode
 from ppbtree import print_tree
 
+import BooleanFunctions
+
 def getsiblings(tree, path):
     currentclass = []
     allpaths = []
@@ -240,8 +242,9 @@ def checkincreasing(strategy):
 
 
 if __name__ == "__main__":
-    n, p = 6, .5
+    n, p = 8, .5
     alltreesn = trees.generatetrees(n)
+
     for treenum in range(len(alltreesn[n])):
         currentnum = 1 # VERY sketch
         tree = fixtree(alltreesn[n][treenum])
@@ -250,6 +253,10 @@ if __name__ == "__main__":
         strategy = buildstrategy(tree, expectedcost, tests)
         outoforder = checkincreasing(strategy)
         if outoforder:
+            BooleanFunctions.index_used = 0
+            f = BooleanFunctions.Formula(BooleanFunctions.class_type(tree))
+            print(treenum)
+            f.show()
             strategy.pprint()
             classes, paths = getsiblings(tree, [])
             print(classes)
