@@ -98,7 +98,9 @@ def generate_all_read_once_functions(num_of_vars):
                 index_used = -1
                 f.lambda_type = lambda_type(tree)
                 # ret[n].append([f, lambda_type(tree)])
-                ret[n].append(f)
+                # ret[n][0].append(f)
+                ret[n].append([f, tree])
+                # ret[n][1].append(tree)
     return ret
 
 
