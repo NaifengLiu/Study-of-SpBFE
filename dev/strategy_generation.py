@@ -1,4 +1,5 @@
 import copy
+import itertools
 
 
 def generate(n, candidate=None):
@@ -21,6 +22,18 @@ def generate(n, candidate=None):
                         tmp_output += a[2 ** j - 1:2 ** (j + 1) - 1] + b[2 ** j - 1:2 ** (j + 1) - 1]
                     output.append(tmp_output)
         return output
+
+
+def generate_non_adaptive(n):
+    all_path = list(itertools.permutations(list(range(n))))
+    all_strategies = []
+    for each in all_path:
+        ret = []
+        for i in range(n):
+            for _ in range(2**i):
+                ret.append(each[i])
+        all_strategies.append(ret)
+    return all_strategies
 
 
 # print(len(generate(3)))

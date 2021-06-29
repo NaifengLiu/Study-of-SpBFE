@@ -5,8 +5,8 @@ import influence
 import operator
 from BinaryTree import Node as BNode
 from BooleanFunctions import *
-from ppbtree import Node as PPNode
-from ppbtree import print_tree
+# from ppbtree import Node as PPNode
+# from ppbtree import print_tree
 from tqdm import tqdm
 import DynProg
 
@@ -101,25 +101,25 @@ class Tree:
 		printed_tree = self.build_print_tree(self.root)
 		print(printed_tree)
 
-	def ppprint(self):
-		ppprint_tree = self.build_pptree(self.root)
-		print_tree(ppprint_tree)
-
-	def build_pptree(self, node, parent=None):
-		if node.leaf is not True:
-			root = PPNode('x' + str(node.x))
-			# print(node.x)
-			# print(node.lchild.x)
-			# print(node.rchild.x)
-			# print()
-			if node.rchild is not None:
-				root.left = self.build_pptree(node.rchild)
-			if node.lchild is not None:
-				root.right = self.build_pptree(node.lchild)
-			return root
-		else:
-			root = PPNode('[+]' if node.boolean_value == 1 else '[-]')
-			return root
+	# def ppprint(self):
+	# 	ppprint_tree = self.build_pptree(self.root)
+	# 	print_tree(ppprint_tree)
+	#
+	# def build_pptree(self, node, parent=None):
+	# 	if node.leaf is not True:
+	# 		root = PPNode('x' + str(node.x))
+	# 		# print(node.x)
+	# 		# print(node.lchild.x)
+	# 		# print(node.rchild.x)
+	# 		# print()
+	# 		if node.rchild is not None:
+	# 			root.left = self.build_pptree(node.rchild)
+	# 		if node.lchild is not None:
+	# 			root.right = self.build_pptree(node.lchild)
+	# 		return root
+	# 	else:
+	# 		root = PPNode('[+]' if node.boolean_value == 1 else '[-]')
+	# 		return root
 
 
 def greedy_influence(node: Node, tree: Tree):
