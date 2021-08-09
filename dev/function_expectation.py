@@ -34,3 +34,4 @@ def exp(t): return (t[0] and t[1]) or ((t[2] or t[3]) and (t[4] or t[5]) and t[6
 
 
 print(expectation(7, exp, [.5] * 7))
+print(0+None)

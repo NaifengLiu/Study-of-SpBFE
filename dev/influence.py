@@ -15,7 +15,13 @@ def f(n, expression):
 
 	# for each in truth_table:
 	# 	print(str(each) + " : " + str(truth_table[each]))
-
+	t = []
+	for i in range(len(truth_table.keys())):
+		if truth_table[list(truth_table.keys())[i]] == 1:
+			# print(i)
+			# print(list(truth_table.keys())[i])
+			t.append(i)
+	# print(t)
 	return truth_table
 
 
@@ -79,10 +85,10 @@ if __name__ == "__main__":
 
 
 # def exp(t): return (t[0] and t[1]) or (t[2] and t[3])
-def exp(t): return t[0] or (t[1] and t[2] and t[3])
-
-
-print(find_influences(4, exp, [0.25, 0.75, 0.75, 0.5]))
+# def exp(t): return t[0] or (t[1] and t[2] and t[3])
+#
+#
+# print(find_influences(4, exp, [0.25, 0.75, 0.75, 0.5]))
 
 # find_prob_flipping_f(5, [0.7, 0.2, 0.2, 0.3, 0.1], [1] * 5)
 # find_prob_flipping_f(5, [0.25, 0.45, 0.57, 0.73, 0.78], [1] * 5)
