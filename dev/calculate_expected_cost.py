@@ -4,6 +4,7 @@ import itertools
 import tqdm
 import numpy as np
 from dev import influence, RandomInput, strategy_generation
+from BinaryTree import Node as BNode
 
 print("generating strategies ... ")
 strategies = strategy_generation.generate(4)
@@ -78,12 +79,27 @@ class Tree:
                 node.boolean_value = 1 if self.expression(node.assignment) else 0
                 node.leaf = True
 
+    def build_print_tree(self, node):
+        if node.index <= 30:
+            if node.leaf is not True:
+                root = BNode('x' + str(node.x))
+                if node.rchild is not None:
+                    root.right = self.build_print_tree(node.rchild)
+                if node.lchild is not None:
+                    root.left = self.build_print_tree(node.lchild)
+                return root
+            else:
+                root = BNode('+' if node.boolean_value == 1 else '-')
+                return root
+
+    def print(self):
+        printed_tree = self.build_print_tree(self.root)
+        print(printed_tree)
 
     def calculate_strategy_cost(self, strategy, costs, probs, verification=None):
         self.root = self.build_tree(0, 0)
         self.fill_strategy(strategy, costs, probs)
-        # for _ in range(self.max_level):
-        # 	self.pruning()
+        # self.print()
         return self.calculate_tree_cost(self.root, verification=verification)
 
     def calculate_tree_cost(self, node, verification=None):
@@ -91,6 +107,7 @@ class Tree:
             if node.leaf is True:
                 return node.probability_to_reach_this_node * node.cost_to_reach_this_node
             # if node.index in [3,4,5,6]:
+            # if node.index in list(range(15,31)):
             #     print(node.index)
             #     print(self.calculate_tree_cost(node.lchild) + self.calculate_tree_cost(node.rchild))
             return self.calculate_tree_cost(node.lchild) + self.calculate_tree_cost(node.rchild)
@@ -131,6 +148,7 @@ class Tree:
         #     return True
         # return False
         if if_1_certificate(assignment) or if_0_certificate(assignment):
+            # print(assignment)
             return True
         return False
 
@@ -163,21 +181,43 @@ def if_0_certificate(assignment):
         else:
             tmp.append(0.5)
 
-    if (tmp[0] * tmp[2] * tmp[6] == 0) \
-            and (tmp[0] * tmp[2] * tmp[7] == 0) \
-            and (tmp[0] * tmp[3] * tmp[8] == 0) \
-            and (tmp[0] * tmp[3] * tmp[9] == 0) \
-            and (tmp[1] * tmp[4] * tmp[10] == 0) \
-            and (tmp[1] * tmp[4] * tmp[11] == 0) \
-            and (tmp[1] * tmp[5] * tmp[12] == 0) \
-            and (tmp[1] * tmp[5] + tmp[13] == 0):
-        return True
+    t = 0
+    t += (tmp[0] * tmp[2] * tmp[6])
+    t += (tmp[0] * tmp[2] * tmp[7])
+    t += (tmp[0] * tmp[3] * tmp[8])
+    t += (tmp[0] * tmp[3] * tmp[9])
+    t += (tmp[1] * tmp[4] * tmp[10])
+    t += (tmp[1] * tmp[4] * tmp[11])
+    t += (tmp[1] * tmp[5] * tmp[12])
+    t += (tmp[1] * tmp[5] * tmp[13])
 
+    # print(t)
+
+    if t == 0.0 or t == 0:
+        return True
     return False
+
+    # if (tmp[0] * tmp[2] * tmp[6] ) \
+    #         + (tmp[0] * tmp[2] * tmp[7] ) \
+    #         + (tmp[0] * tmp[3] * tmp[8] ) \
+    #         + (tmp[0] * tmp[3] * tmp[9] ) \
+    #         + (tmp[1] * tmp[4] * tmp[10] ) \
+    #         + (tmp[1] * tmp[4] * tmp[11] ) \
+    #         + (tmp[1] * tmp[5] * tmp[12] ) \
+    #         + (tmp[1] * tmp[5] + tmp[13] ) == 0.0:
+    #     return True
+    #
+    # return False
 
 
 if __name__ == "__main__":  # file is imported as library to dynprog3
 
+    # tmp = [None]*14
+    # tmp[1] = 1
+    # tmp[5] = 0
+    # tmp[13] = 0
+    # tmp[0] = 0
+    # print(if_0_certificate(tmp))
     # def example(x):
     #     return (x[0] and x[2] and x[6]) \
     #            or (x[0] and x[3] and x[7]) \
@@ -233,21 +273,22 @@ if __name__ == "__main__":  # file is imported as library to dynprog3
     c = [1] * 14
     p = [0.5] * 14
 
-    # print(min(res))
     mincost = T.calculate_strategy_cost(
         [0] + [1] * 2 + [2] * 4 + [3] * 8 + [4] * 16 + [5] * 32 + [6] * 64 + [7] * 128 + [8] * 256 + [9] * 512 + [
             10] * 1024 + [11] * 2048 + [12] * 4096 + [13] * 8192, c, p)
     print(mincost)
-    mincost1 = T.calculate_strategy_cost(
-        [0] + [1] * 2 + [2] * 4 + [3] * 8 + [4] * 16 + [5] * 32 + [6] * 64 + [7] * 128 + [8] * 256 + [9] * 512 + [
-            10] * 1024 + [11] * 2048 + [12] * 4096 + [13] * 8192, c, p, verification=1)
-    print(mincost1)
-    mincost2 = T.calculate_strategy_cost(
-        [0] + [1] * 2 + [2] * 4 + [3] * 8 + [4] * 16 + [5] * 32 + [6] * 64 + [7] * 128 + [8] * 256 + [9] * 512 + [
-            10] * 1024 + [11] * 2048 + [12] * 4096 + [13] * 8192, c, p, verification=0)
-    print(mincost2)
+
+    # mincost1 = T.calculate_strategy_cost(
+    #     [0] + [1] * 2 + [2] * 4 + [3] * 8 + [4] * 16 + [5] * 32 + [6] * 64 + [7] * 128 + [8] * 256 + [9] * 512 + [
+    #         10] * 1024 + [11] * 2048 + [12] * 4096 + [13] * 8192, c, p, verification=1)
+    # print(mincost1)
+    # mincost2 = T.calculate_strategy_cost(
+    #     [0] + [1] * 2 + [2] * 4 + [3] * 8 + [4] * 16 + [5] * 32 + [6] * 64 + [7] * 128 + [8] * 256 + [9] * 512 + [
+    #         10] * 1024 + [11] * 2048 + [12] * 4096 + [13] * 8192, c, p, verification=0)
+    # print(mincost2)
 
     print("############")
+
 
     # mincost = T.calculate_strategy_cost([0]+[1]*2+[2]*4+[3]*8+[4]*16+[5]*32, c, p, verification=1)
     # print(mincost)
@@ -266,47 +307,34 @@ if __name__ == "__main__":  # file is imported as library to dynprog3
     # # print(T.calculate_strategy_cost(make_strategy([0, 1, 8, 4, 3, 9, 2, 7, 6, 5]), c, p, verification=1))
     # # print(T.calculate_strategy_cost(make_strategy([0, 1, 8, 4, 3, 9, 2, 7, 6, 5]), c, p, verification=0))
 
-    o = [0, 1, 2, 6, 7, 3, 8, 9, 4, 10, 11, 5, 12, 13]
+    o = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     print(o)
     print(T.calculate_strategy_cost(make_strategy(o), c, p))
-    o = [0, 2, 6, 7, 3, 8, 9, 1, 4, 10, 11, 5, 12, 13]
+
+    o = [1, 5, 13, 0, 2, 6, 7, 3, 8, 4, 11, 10, 9, 12]
+    print(o)
+    print(T.calculate_strategy_cost(make_strategy(o), c, p))
+
+    o = [0, 1, 5, 13, 2, 6, 7, 3, 8, 4, 11, 10, 9, 12]
+    print(o)
+    print(T.calculate_strategy_cost(make_strategy(o), c, p))
+
+    o = [1, 5, 13, 0, 2, 6, 3, 8, 4, 11, 10, 7, 9, 12]
     print(o)
     print(T.calculate_strategy_cost(make_strategy(o), c, p))
 
     while True:
-        # current_best = 10.4683837890625
+        #     # current_best = 10.4683837890625
         o = np.random.permutation(14)
-        # o = [1,  13,  8,  4,  9,  0,  3, 10,  5, 12,  2,  7, 11,  6]
-        #
-        # print(list(o))
-        # # o = [11,  0,  8,  6,  3, 10, 13,  4,  1, 12,  9,  5,  2,  7]
-        # # o = [0, 1, 2, 6, 7, 3, 8, 9, 4, 10, 11, 5, 12, 13]
-        # # [0, 1, 2, 6, 7, 3, 8, 9, 4, 10, 11, 5, 12, 13]
-        # # 10.8739013671875
-        # # 4.10546875
-        # # 6.7684326171875
-        # # print(o)
-        # res = T.calculate_strategy_cost(make_strategy(o), c, p)
-        # print(res)
-        #
-        # o = [13, 1, 8, 4, 9, 0, 3, 10, 5, 12, 2, 7, 11, 6]
-        #
-        # print(o)
-        # # o = [11,  0,  8,  6,  3, 10, 13,  4,  1, 12,  9,  5,  2,  7]
-        # # o = [0, 1, 2, 6, 7, 3, 8, 9, 4, 10, 11, 5, 12, 13]
-        # # [0, 1, 2, 6, 7, 3, 8, 9, 4, 10, 11, 5, 12, 13]
-        # # 10.8739013671875
-        # # 4.10546875
-        # # 6.7684326171875
-        # # print(o)
         res = T.calculate_strategy_cost(make_strategy(o), c, p)
-        # print(res)
-        # break
-        # res = T.calculate_strategy_cost(make_strategy(o), c, p, verification=1)
-        # print(res)
-        # res = T.calculate_strategy_cost(make_strategy(o), c, p, verification=0)
-        # print(res)
-        # break
+        #     # print(res)
+        #     # break
+        #     # res = T.calculate_strategy_cost(make_strategy(o), c, p, verification=1)
+        #     # print(res)
+        #     # res = T.calculate_strategy_cost(make_strategy(o), c, p, verification=0)
+        #     # print(res)
+        #     # break
+        #     mincost = 9.03955078125
         if res < mincost:
             print("###############")
             print(list(o))
