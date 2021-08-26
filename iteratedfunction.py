@@ -31,6 +31,12 @@ def getextinction(polynomial):
     roots = np.real(np.roots(modified))
     return np.where(roots > 0, roots, np.inf).min()
 
+def getmu(numchild, probchild):
+    total = 0
+    for i in range(numchild+1):
+        total += i*probchild**i * (1-probchild)**(numchild-i) * special.binom(numchild, i)
+    return total
+
 def phi(s, polynomial):
     scoeff = np.array([s**i for i in range(len(polynomial)-1, -1, -1)])
     return np.dot(scoeff, polynomial)
@@ -40,13 +46,15 @@ def phi(s, polynomial):
 # Probability a node is alive is (k/(k-1))^d/k^d=(1/(k-1))^d = (want) = 1/n
 
 s = 0
-k = 20
-numchild = k
-probchild = 1/(k-1)
+k = 1000
+numchild = k+1
+probchild = 1/k
 iterations = 100
 polynomial = getpolynomial(probchild, numchild)
 probextinct = getextinction(polynomial)
 print('Extinction probability:', probextinct)
 print('Mu:', np.dot(polynomial, np.array(list(range(len(polynomial)-1, -1, -1)))))
+mu = getmu(numchild, probchild)
+print('Mu Check:', mu)
 
-#converge(iterations=100, numchild=numchild, probchild=probchild)
+converge(iterations=100, numchild=numchild, probchild=probchild)
